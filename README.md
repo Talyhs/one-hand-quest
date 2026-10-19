@@ -1,13 +1,13 @@
-# One-Hand Quest (Android)
+# Qara Qızıl: Damcı Ovçusu (Android)
 
-Portrait arcade game starter built with native Android Canvas. Includes 120 progressive levels, three lanes, swipe/tap controls, collectible orbs, red hazards, score, coins, and local save data.
+Azerbaijani portrait arcade game. Move the bucket with one finger to catch golden oil drops, avoid gray stones, earn coins, beat your record, and progress through 120 levels. Progress and best score are saved locally on the device.
 
-## Build APK using GitHub Actions
-1. Open **Actions** and enable workflows if prompted.
-2. Run **Build Android APK** using **Run workflow**, or push a commit.
-3. Download the `one-hand-quest-debug-apk` artifact from the completed workflow run.
+## Build APK with GitHub Actions
+1. Open the **Pull requests** tab and create/merge the feature branch PR, or use **Actions → Build Android APK → Run workflow** and select `feature/black-gold-drop-catcher` if available.
+2. Wait for the workflow to finish successfully.
+3. Open the completed workflow run and download the `qara-qizil-debug-apk` artifact.
+
+The debug APK is for testing and is not a signed Play Store release. Test it on a real Android device before release.
 
 ## Local build
-Open this project in Android Studio with JDK 17 and Android SDK 35 installed, sync Gradle, then use **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-
-The debug APK is for testing, not a signed Play Store release. Test on a real device before release.
+Open this project in Android Studio with JDK 17 and Android SDK 35 installed, sync Gradle, then choose **Build → Build Bundle(s) / APK(s) → Build APK(s)**.
