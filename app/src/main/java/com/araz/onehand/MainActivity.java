@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.*;
 import android.view.MotionEvent;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,6 +32,7 @@ public class MainActivity extends Activity {
   class OilGame extends View {
     final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
     final Random random = new Random();
+    final ToneGenerator tones = new ToneGenerator(AudioManager.STREAM_MUSIC, 70);
     final ArrayList<Drop> drops = new ArrayList<>();
     final SharedPreferences prefs;
     final int gold = Color.rgb(255,190,62);
@@ -47,6 +50,7 @@ public class MainActivity extends Activity {
       setLayerType(View.LAYER_TYPE_SOFTWARE,null);
     }
     String hearts() { String s=""; for(int i=0;i<Math.max(0,lives);i++) s += "♥ "; return s; }
+    void playSound(int tone, int duration) { try { tones.startTone(tone, duration); } catch (Exception ignored) {} }
     void save() {
       prefs.edit().putInt("level",level).putInt("coins",coins).putInt("best",best).apply();
     }
@@ -76,8 +80,8 @@ public class MainActivity extends Activity {
           Drop d=it.next(); d.y+=d.speed*dt;
           drawDrop(canvas,d);
           if(d.y+d.r>bucketY-h*.02f && d.y-d.r<bucketY+h*.025f && Math.abs(d.x-bucketX)<w*.105f) {
-            if(d.stone) { lives--; combo=0; score=Math.max(0,score-5); performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS); }
-            else { combo++; score+=10+Math.min(10,combo-1); coins++; best=Math.max(best,score); performHapticFeedback(android.view.HapticFeedbackConstants.TEXT_HANDLE_MOVE); }
+            if(d.stone) { lives--; combo=0; score=Math.max(0,score-5); playSound(ToneGenerator.TONE_PROP_NACK,180); performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS); }
+            else { combo++; score+=10+Math.min(10,combo-1); coins++; best=Math.max(best,score); playSound(combo>3?ToneGenerator.TONE_PROP_ACK:ToneGenerator.TONE_PROP_BEEP2,90); performHapticFeedback(android.view.HapticFeedbackConstants.TEXT_HANDLE_MOVE); }
             it.remove();
           } else if(d.y>h+d.r) {
             if(!d.stone) { lives--; combo=0; }
@@ -89,7 +93,7 @@ public class MainActivity extends Activity {
           if(level<313) level++;
           save();
         }
-        if(lives<=0) { gameOver=true; save(); }
+        if(lives<=0) { gameOver=true; playSound(ToneGenerator.TONE_PROP_NACK,380); save(); }
         postInvalidateDelayed(16);
       } else {
         for(Drop d:drops) drawDrop(canvas,d);
@@ -107,6 +111,9 @@ public class MainActivity extends Activity {
     void drawBackground(Canvas c,float w,float h) {
       p.setShader(new LinearGradient(0,0,0,h,0xff07111c,0xff163448,Shader.TileMode.CLAMP));
       c.drawRect(0,0,w,h,p); p.setShader(null);
+      p.setShader(new RadialGradient(w*.82f,h*.16f,w*.10f,new int[]{0x55fff0bc,0x11fff0bc,0x00000000},null,Shader.TileMode.CLAMP));
+      c.drawCircle(w*.82f,h*.16f,w*.10f,p); p.setShader(null);
+      p.setColor(0x33f9d58a); c.drawCircle(w*.82f,h*.16f,w*.042f,p);
       for(int i=0;i<44;i++) {
         float sx=(i*83f+17)%w, sy=(i*151f)% (h*.62f);
         p.setColor((i%4==0)?0xffffd98b:0x667ca1b8);
@@ -142,6 +149,9 @@ public class MainActivity extends Activity {
         path.cubicTo(d.x+d.r*.25f,d.y+d.r*1.15f,d.x-d.r*.45f,d.y+d.r*.95f,d.x-d.r*.68f,d.y+d.r*.45f);
         path.cubicTo(d.x-d.r*1.0f,d.y-d.r*.05f,d.x-d.r*.18f,d.y-d.r*.65f,d.x,d.y-d.r*1.35f);
         c.drawPath(path,p); p.setShader(null); p.clearShadowLayer();
+        p.setColor(0xccfff7d1); p.setStrokeWidth(Math.max(1.5f,d.r*.10f)); p.setStrokeCap(Paint.Cap.ROUND);
+        c.drawLine(d.x-d.r*.18f,d.y-d.r*.50f,d.x-d.r*.30f,d.y-d.r*.18f,p);
+        p.setColor(0x66fff1a0); c.drawCircle(d.x+d.r*.25f,d.y+d.r*.28f,d.r*.12f,p);
       }
     }
     void drawHUD(Canvas c,float w,float h) {
@@ -159,6 +169,7 @@ public class MainActivity extends Activity {
       Path b=new Path(); b.moveTo(x-bw/2,y-bh/2); b.lineTo(x+bw/2,y-bh/2); b.lineTo(x+bw*.36f,y+bh/2); b.quadTo(x,y+bh*.75f,x-bw*.36f,y+bh/2); b.close(); c.drawPath(b,p); p.clearShadowLayer();
       p.setColor(cream); p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(Math.max(3,w*.008f)); c.drawLine(x-bw*.56f,y-bh*.52f,x+bw*.56f,y-bh*.52f,p); p.setStyle(Paint.Style.FILL);
       p.setColor(0xff70400b); p.setTextAlign(Paint.Align.CENTER); p.setTextSize(w*.022f); c.drawText("NEFT",x,y+bh*.20f,p);
+      p.setColor(0x99fff0b0); p.setStrokeWidth(Math.max(1.5f,w*.003f)); c.drawLine(x-bw*.30f,y+bh*.05f,x+bw*.28f,y+bh*.05f,p);
     }
     void drawPanel(Canvas c,float w,float h) {
       p.setColor(0xe8091722); c.drawRoundRect(w*.075f,h*.29f,w*.925f,h*.69f,28,28,p);
