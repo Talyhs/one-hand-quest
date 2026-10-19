@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
     OilGame(Context context) {
       super(context);
       prefs=getSharedPreferences("black_gold_save", MODE_PRIVATE);
-      level=Math.max(1, Math.min(120, prefs.getInt("level",1)));
+      level=Math.max(1, Math.min(313, prefs.getInt("level",1)));
       coins=prefs.getInt("coins",0);
       best=prefs.getInt("best",0);
       setLayerType(View.LAYER_TYPE_SOFTWARE,null);
@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
         }
         if(score>=levelGoal()) {
           levelWon=true;
-          if(level<120) level++;
+          if(level<313) level++;
           save();
         }
         if(lives<=0) { gameOver=true; save(); }
@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
       }
     }
     int fiftyFive(){ return Math.max(30,55-Math.min(20,level/6)); }
-    int levelGoal(){ return 100 + (level-1)*15; }
+    int levelGoal(){ return 100 + (level-1)*8 + (level/25)*20; }
     void drawBackground(Canvas c,float w,float h) {
       p.setShader(new LinearGradient(0,0,0,h,0xff07111c,0xff163448,Shader.TileMode.CLAMP));
       c.drawRect(0,0,w,h,p); p.setShader(null);
@@ -147,7 +147,7 @@ public class MainActivity extends Activity {
     void drawHUD(Canvas c,float w,float h) {
       p.setTextAlign(Paint.Align.CENTER); p.setTypeface(Typeface.create("sans-serif-black",Typeface.NORMAL));
       p.setColor(cream); p.setTextSize(w*.065f); c.drawText("QARA QIZIL",w/2,h*.065f,p);
-      p.setTypeface(Typeface.DEFAULT_BOLD); p.setColor(0xffb9ccd7); p.setTextSize(w*.031f); c.drawText("DAMCI OVÇUSU  •  SƏVİYYƏ "+level+"/120",w/2,h*.103f,p);
+      p.setTypeface(Typeface.DEFAULT_BOLD); p.setColor(0xffb9ccd7); p.setTextSize(w*.031f); c.drawText("DAMCI OVÇUSU  •  SƏVİYYƏ "+level+"/313",w/2,h*.103f,p);
       p.setTextAlign(Paint.Align.LEFT); p.setColor(gold); p.setTextSize(w*.041f); c.drawText("XAL  "+score,w*.055f,h*.155f,p);
       p.setTextAlign(Paint.Align.RIGHT); p.setColor(0xffff7a76); c.drawText(hearts(),w*.945f,h*.155f,p);
       p.setTextAlign(Paint.Align.CENTER); p.setColor(0xffc5d7e2); p.setTextSize(w*.029f); c.drawText("Sikkə: "+coins+"     Rekord: "+best+(combo>1?"     KOMBO x"+combo:""),w/2,h*.19f,p);
@@ -191,7 +191,7 @@ public class MainActivity extends Activity {
       }
       if(e.getAction()==MotionEvent.ACTION_UP) {
         if(!started || gameOver || levelWon) {
-          if(level>=120 && levelWon) level=1;
+          if(level>=313 && levelWon) level=1;
           startGame(); return true;
         }
         bucketX=Math.max(w*.11f,Math.min(w*.89f,e.getX())); invalidate(); return true;
