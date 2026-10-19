@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
       best=prefs.getInt("best",0);
       setLayerType(View.LAYER_TYPE_SOFTWARE,null);
     }
+    String hearts() { String s=""; for(int i=0;i<Math.max(0,lives);i++) s += "♥ "; return s; }
     void save() {
       prefs.edit().putInt("level",level).putInt("coins",coins).putInt("best",best).apply();
     }
@@ -148,7 +149,7 @@ public class MainActivity extends Activity {
       p.setColor(cream); p.setTextSize(w*.065f); c.drawText("QARA QIZIL",w/2,h*.065f,p);
       p.setTypeface(Typeface.DEFAULT_BOLD); p.setColor(0xffb9ccd7); p.setTextSize(w*.031f); c.drawText("DAMCI OVÇUSU  •  SƏVİYYƏ "+level+"/120",w/2,h*.103f,p);
       p.setTextAlign(Paint.Align.LEFT); p.setColor(gold); p.setTextSize(w*.041f); c.drawText("XAL  "+score,w*.055f,h*.155f,p);
-      p.setTextAlign(Paint.Align.RIGHT); p.setColor(0xffff7a76); c.drawText("♥ ".repeat(Math.max(0,lives)),w*.945f,h*.155f,p);
+      p.setTextAlign(Paint.Align.RIGHT); p.setColor(0xffff7a76); c.drawText(hearts(),w*.945f,h*.155f,p);
       p.setTextAlign(Paint.Align.CENTER); p.setColor(0xffc5d7e2); p.setTextSize(w*.029f); c.drawText("Sikkə: "+coins+"     Rekord: "+best,w/2,h*.19f,p);
     }
     void drawBucket(Canvas c,float w,float h) {
