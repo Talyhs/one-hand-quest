@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
     final int gold = Color.rgb(255,190,62);
     final int cream = Color.rgb(255,235,177);
     float bucketX, bucketY, fingerX, lastX;
-    int score=0, lives=3, level, coins, best, ticks=0;
+    int score=0, lives=3, level, coins, best, ticks=0, combo=0;
     boolean started=false, gameOver=false, levelWon=false;
     long lastFrame=System.currentTimeMillis();
     OilGame(Context context) {
@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
       prefs.edit().putInt("level",level).putInt("coins",coins).putInt("best",best).apply();
     }
     void startGame() {
-      score=0; lives=3; ticks=0; drops.clear(); started=true; gameOver=false; levelWon=false;
+      score=0; lives=3; ticks=0; combo=0; drops.clear(); started=true; gameOver=false; levelWon=false;
       lastFrame=System.currentTimeMillis(); invalidate();
     }
     @Override protected void onDraw(Canvas canvas) {
@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
       drawOilRig(canvas,w,h);
       if(started && !gameOver && !levelWon) {
         long now=System.currentTimeMillis();
-        float dt=Math.min(.045f,Math.max(.008f,(now-lastFrame)/1000f));
+        float dt=Math.min(.05f,Math.max(0f,(now-lastFrame)/1000f));
         lastFrame=now; ticks++;
         int spawnEvery=Math.max(19, fiftyFive()-level/3);
         if(ticks%spawnEvery==0) {
@@ -76,11 +76,11 @@ public class MainActivity extends Activity {
           Drop d=it.next(); d.y+=d.speed*dt;
           drawDrop(canvas,d);
           if(d.y+d.r>bucketY-h*.02f && d.y-d.r<bucketY+h*.025f && Math.abs(d.x-bucketX)<w*.105f) {
-            if(d.stone) { lives--; score=Math.max(0,score-5); }
-            else { score+=10; coins++; best=Math.max(best,score); }
+            if(d.stone) { lives--; combo=0; score=Math.max(0,score-5); performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS); }
+            else { combo++; score+=10+Math.min(10,combo-1); coins++; best=Math.max(best,score); performHapticFeedback(android.view.HapticFeedbackConstants.TEXT_HANDLE_MOVE); }
             it.remove();
           } else if(d.y>h+d.r) {
-            if(!d.stone) lives--;
+            if(!d.stone) { lives--; combo=0; }
             it.remove();
           }
         }
@@ -102,7 +102,7 @@ public class MainActivity extends Activity {
         canvas.drawText("Qabı barmağınla sağa-sola sürüşdür",w/2,h*.94f,p);
       }
     }
-    int fiftyFive(){ return 55; }
+    int fiftyFive(){ return Math.max(30,55-Math.min(20,level/6)); }
     int levelGoal(){ return 100 + (level-1)*15; }
     void drawBackground(Canvas c,float w,float h) {
       p.setShader(new LinearGradient(0,0,0,h,0xff07111c,0xff163448,Shader.TileMode.CLAMP));
@@ -150,7 +150,7 @@ public class MainActivity extends Activity {
       p.setTypeface(Typeface.DEFAULT_BOLD); p.setColor(0xffb9ccd7); p.setTextSize(w*.031f); c.drawText("DAMCI OVÇUSU  •  SƏVİYYƏ "+level+"/120",w/2,h*.103f,p);
       p.setTextAlign(Paint.Align.LEFT); p.setColor(gold); p.setTextSize(w*.041f); c.drawText("XAL  "+score,w*.055f,h*.155f,p);
       p.setTextAlign(Paint.Align.RIGHT); p.setColor(0xffff7a76); c.drawText(hearts(),w*.945f,h*.155f,p);
-      p.setTextAlign(Paint.Align.CENTER); p.setColor(0xffc5d7e2); p.setTextSize(w*.029f); c.drawText("Sikkə: "+coins+"     Rekord: "+best,w/2,h*.19f,p);
+      p.setTextAlign(Paint.Align.CENTER); p.setColor(0xffc5d7e2); p.setTextSize(w*.029f); c.drawText("Sikkə: "+coins+"     Rekord: "+best+(combo>1?"     KOMBO x"+combo:""),w/2,h*.19f,p);
     }
     void drawBucket(Canvas c,float w,float h) {
       if(bucketX==0) bucketX=w/2;
@@ -197,6 +197,11 @@ public class MainActivity extends Activity {
         bucketX=Math.max(w*.11f,Math.min(w*.89f,e.getX())); invalidate(); return true;
       }
       return true;
+    }
+    @Override protected void onSizeChanged(int w,int h,int oldw,int oldh) {
+      super.onSizeChanged(w,h,oldw,oldh);
+      if(bucketX<=0 || bucketX>w) bucketX=w/2f;
+      bucketY=h*.81f;
     }
   }
 }
