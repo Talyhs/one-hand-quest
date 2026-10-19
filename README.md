@@ -1,6 +1,6 @@
 # Qara Qızıl: Damcı Ovçusu (Android)
 
-Azerbaijani portrait arcade game. Move the bucket with one finger to catch golden oil drops, avoid gray stones, earn coins, beat your record, and progress through 120 levels. Progress and best score are saved locally on the device.
+Azerbaijani portrait arcade game. Move the bucket with one finger to catch golden oil drops, avoid gray stones, earn coins, beat your record, and progress through 313 levels. Progress and best score are saved locally on the device.
 
 ## Build APK with GitHub Actions
 1. Open the **Pull requests** tab and create/merge the feature branch PR, or use **Actions → Build Android APK → Run workflow** and select `feature/black-gold-drop-catcher` if available.
