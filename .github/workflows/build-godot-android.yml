@@ -66,10 +66,15 @@ jobs:
           curl -fL --retry 3 "https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz" -o "$RUNNER_TEMP/godot/templates.tpz"
           mkdir -p "$RUNNER_TEMP/godot/templates"
           unzip -q "$RUNNER_TEMP/godot/templates.tpz" -d "$RUNNER_TEMP/godot/templates"
-          TEMPLATE_DIR="$(find "$RUNNER_TEMP/godot/templates" -type d -name 'templates' -print -quit)"
-          test -n "$TEMPLATE_DIR"
-          cp "$TEMPLATE_DIR/android_debug.apk" "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
-          cp "$TEMPLATE_DIR/android_release.apk" "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
+          DEBUG_TEMPLATE="$(find "$RUNNER_TEMP/godot/templates" -type f -name 'android_debug.apk' -print -quit)"
+          RELEASE_TEMPLATE="$(find "$RUNNER_TEMP/godot/templates" -type f -name 'android_release.apk' -print -quit)"
+          if [[ -z "$DEBUG_TEMPLATE" || -z "$RELEASE_TEMPLATE" ]]; then
+            echo "Android export templates were not found in the archive. Available files:"
+            find "$RUNNER_TEMP/godot/templates" -maxdepth 4 -type f | head -80
+            exit 1
+          fi
+          cp "$DEBUG_TEMPLATE" "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
+          cp "$RELEASE_TEMPLATE" "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
           ls -lh "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
 
       - name: Configure Godot Android paths and debug signing
