@@ -41,7 +41,7 @@ func _material(color: Color, metallic: float = 0.0, roughness: float = 0.5, glow
 		m.emission_energy_multiplier = 1.4
 	return m
 
-func _box(label: String, pos: Vector3, size: Vector3, color: Color, parent: Node3D = self) -> MeshInstance3D:
+func _box(label: String, pos: Vector3, size: Vector3, color: Color, parent: Node3D = null) -> MeshInstance3D:
 	var n := MeshInstance3D.new()
 	n.name = label
 	var mesh := BoxMesh.new()
@@ -49,7 +49,8 @@ func _box(label: String, pos: Vector3, size: Vector3, color: Color, parent: Node
 	n.mesh = mesh
 	n.position = pos
 	n.material_override = _material(color, 0.25, 0.4)
-	parent.add_child(n)
+	var target: Node3D = self if parent == null else parent
+	target.add_child(n)
 	return n
 
 func _build_world() -> void:
