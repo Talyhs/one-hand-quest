@@ -1,0 +1,48 @@
+name: Build Qara Qızıl 3D Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - feature/black-gold-drop-catcher
+    paths:
+      - "godot-3d/**"
+      - ".github/workflows/build-godot-android.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "godot-3d/**"
+      - ".github/workflows/build-godot-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-godot-android:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Godot project and GDScript
+        run: godot --headless --path godot-3d --editor --quit
+
+      - name: Export Android debug APK
+        run: |
+          mkdir -p build
+          godot --headless --path godot-3d --export-debug "Android" build/qara-qizil-3d-debug.apk
+          test -s build/qara-qizil-3d-debug.apk
+          file build/qara-qizil-3d-debug.apk
+          du -h build/qara-qizil-3d-debug.apk
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: qara-qizil-3d-debug-apk
+          path: build/qara-qizil-3d-debug.apk
+          if-no-files-found: error
+          retention-days: 14
