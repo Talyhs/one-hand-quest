@@ -14,4 +14,4 @@ Open this folder in Godot 4.x and run the main scene. This source prototype is n
 
 
 ## CI note
-The Android workflow installs the exact Godot 4.4.1 export templates, Java 17, Android SDK platform/build tools, and a temporary debug keystore before exporting. A successful CI export is required before treating the APK as ready.
+The Android workflow installs the exact Godot 4.4.1 export templates, Java 17, Android SDK platform/build tools using the runner's explicit sdkmanager path, and a temporary debug keystore before exporting. A successful CI export is required before treating the APK as ready.
