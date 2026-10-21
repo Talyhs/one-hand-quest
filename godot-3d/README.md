@@ -11,3 +11,7 @@ This is a separate Godot 4 project beside the existing Java/Android prototype. A
 
 ## Run and validate
 Open this folder in Godot 4.x and run the main scene. This source prototype is not a verified Android APK yet. Android export and real-device install/launch testing are still required before calling it release-ready.
+
+
+## CI note
+The Android workflow installs the exact Godot 4.4.1 export templates, Java 17, Android SDK platform/build tools, and a temporary debug keystore before exporting. A successful CI export is required before treating the APK as ready.
