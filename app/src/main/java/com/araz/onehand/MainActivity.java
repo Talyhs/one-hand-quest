@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
     OilGame(Context context) {
       super(context);
       prefs=getSharedPreferences("black_gold_save", MODE_PRIVATE);
-      level=Math.max(1, Math.min(313, prefs.getInt("level",1)));
+      level=Math.max(1, Math.min(999, prefs.getInt("level",1)));
       coins=prefs.getInt("coins",0);
       best=prefs.getInt("best",0);
       setLayerType(View.LAYER_TYPE_SOFTWARE,null);
@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
         if(ticks%spawnEvery==0) {
           float r=w*(.014f+random.nextFloat()*.008f);
           boolean stone=random.nextInt(100)<Math.min(28,8+level/6);
-          drops.add(new Drop(w*.05f+random.nextFloat()*w*.90f,-r,r,h*(.28f+level*.004f+random.nextFloat()*.12f),stone));
+          drops.add(new Drop(w*.05f+random.nextFloat()*w*.90f,-r,r,h*(.28f+Math.min(level,120)*.004f+random.nextFloat()*.12f),stone));
         }
         Iterator<Drop> it=drops.iterator();
         while(it.hasNext()) {
@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
         }
         if(score>=levelGoal()) {
           levelWon=true;
-          if(level<313) level++;
+          if(level<999) level++;
           save();
         }
         if(lives<=0) { gameOver=true; playSound(ToneGenerator.TONE_PROP_NACK,380); save(); }
@@ -157,7 +157,7 @@ public class MainActivity extends Activity {
     void drawHUD(Canvas c,float w,float h) {
       p.setTextAlign(Paint.Align.CENTER); p.setTypeface(Typeface.create("sans-serif-black",Typeface.NORMAL));
       p.setColor(cream); p.setTextSize(w*.065f); c.drawText("QARA QIZIL",w/2,h*.065f,p);
-      p.setTypeface(Typeface.DEFAULT_BOLD); p.setColor(0xffb9ccd7); p.setTextSize(w*.031f); c.drawText("DAMCI OVÇUSU  •  SƏVİYYƏ "+level+"/313",w/2,h*.103f,p);
+      p.setTypeface(Typeface.DEFAULT_BOLD); p.setColor(0xffb9ccd7); p.setTextSize(w*.031f); c.drawText("DAMCI OVÇUSU  •  SƏVİYYƏ "+level+"/999",w/2,h*.103f,p);
       p.setTextAlign(Paint.Align.LEFT); p.setColor(gold); p.setTextSize(w*.041f); c.drawText("XAL  "+score,w*.055f,h*.155f,p);
       p.setTextAlign(Paint.Align.RIGHT); p.setColor(0xffff7a76); c.drawText(hearts(),w*.945f,h*.155f,p);
       p.setTextAlign(Paint.Align.CENTER); p.setColor(0xffc5d7e2); p.setTextSize(w*.029f); c.drawText("Sikkə: "+coins+"     Rekord: "+best+(combo>1?"     KOMBO x"+combo:""),w/2,h*.19f,p);
@@ -175,15 +175,20 @@ public class MainActivity extends Activity {
       p.setColor(0xe8091722); c.drawRoundRect(w*.075f,h*.29f,w*.925f,h*.69f,28,28,p);
       p.setColor(0x99f5b73b); p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(2); c.drawRoundRect(w*.075f,h*.29f,w*.925f,h*.69f,28,28,p); p.setStyle(Paint.Style.FILL);
       p.setTextAlign(Paint.Align.CENTER); p.setTypeface(Typeface.create("sans-serif-black",Typeface.NORMAL)); p.setColor(gold); p.setTextSize(w*.075f);
-      c.drawText(!started?"QARA QIZIL":levelWon?"SƏVİYYƏ KEÇİLDİ":"OYUN BİTDİ",w/2,h*.39f,p);
+      c.drawText(!started?"QARA QIZIL":levelWon?(level>=999?"ƏFSANƏSƏN!":"SƏVİYYƏ KEÇİLDİ"):"OYUN BİTDİ",w/2,h*.39f,p);
       p.setTypeface(Typeface.DEFAULT); p.setColor(0xffe4edf2); p.setTextSize(w*.039f);
       if(!started) {
         c.drawText("Göydən düşən neft damcılarını tut!",w/2,h*.46f,p);
         c.drawText("Boz daşlardan yayın, qabını hərəkət etdir.",w/2,h*.505f,p);
         c.drawText("Hər qızılı damcı +10 xal verir.",w/2,h*.55f,p);
       } else if(levelWon) {
-        c.drawText("Əla! Növbəti səviyyə: "+level,w/2,h*.47f,p);
-        c.drawText("Topladığın xallar: "+score,w/2,h*.52f,p);
+        if(level>=999) {
+          c.drawText("999 səviyyənin hamısını tamamladın!",w/2,h*.47f,p);
+          c.drawText("Sən əsl Damcı Ovçususən!",w/2,h*.52f,p);
+        } else {
+          c.drawText("Əla! Növbəti səviyyə: "+level,w/2,h*.47f,p);
+          c.drawText("Topladığın xallar: "+score,w/2,h*.52f,p);
+        }
       } else {
         c.drawText("Topladığın xal: "+score,w/2,h*.47f,p);
         c.drawText("Rekord: "+best+"   •   Sikkələr: "+coins,w/2,h*.52f,p);
@@ -191,7 +196,7 @@ public class MainActivity extends Activity {
       }
       p.setColor(gold); c.drawRoundRect(w*.27f,h*.595f,w*.73f,h*.655f,18,18,p);
       p.setColor(0xff1b160b); p.setTypeface(Typeface.create("sans-serif-black",Typeface.NORMAL)); p.setTextSize(w*.042f);
-      c.drawText(!started?"OYUNA BAŞLA":levelWon?"DAVAM ET":"YENİDƏN OYNA",w/2,h*.635f,p);
+      c.drawText(!started?"OYUNA BAŞLA":levelWon?(level>=999?"YENİDƏN BAŞLA":"DAVAM ET"):"YENİDƏN OYNA",w/2,h*.635f,p);
     }
     @Override public boolean onTouchEvent(MotionEvent e) {
       float w=getWidth();
@@ -202,7 +207,7 @@ public class MainActivity extends Activity {
       }
       if(e.getAction()==MotionEvent.ACTION_UP) {
         if(!started || gameOver || levelWon) {
-          if(level>=313 && levelWon) level=1;
+          if(level>=999 && levelWon) level=1;
           startGame(); return true;
         }
         bucketX=Math.max(w*.11f,Math.min(w*.89f,e.getX())); invalidate(); return true;
