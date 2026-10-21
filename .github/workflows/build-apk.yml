@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - feature/black-gold-drop-catcher
   pull_request:
     branches:
       - main
