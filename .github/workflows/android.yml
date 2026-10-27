@@ -38,18 +38,6 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Install stable Android SDK packages
-        shell: bash
-        run: |
-          set -euo pipefail
-          SDKMANAGER="$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}" -type f -path '*/cmdline-tools/*/bin/sdkmanager' 2>/dev/null | sort -V | tail -n 1)"
-          if [ -z "$SDKMANAGER" ]; then
-            echo "Could not find Android sdkmanager"
-            exit 1
-          fi
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
 
