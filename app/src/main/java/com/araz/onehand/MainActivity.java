@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
       float top=h*.22f,bottom=h*.79f,lw=w*.27f,cx=w/2;
       for(int i=0;i<3;i++){float x=cx+(i-1)*lw;p.setColor(0x2238bcd4);c.drawRoundRect(x-lw*.43f,top,x+lw*.43f,bottom,20,20,p);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(0x665bd9e8);c.drawRoundRect(x-lw*.43f,top,x+lw*.43f,bottom,20,20,p);p.setStyle(Paint.Style.FILL);}
       long now=System.currentTimeMillis();float dt=Math.min(.05f,(now-last)/1000f);last=now;ticks++;
-      if(ticks%Math.max(12,46-level/25)==0)drops.add(new Drop(rnd.nextInt(3),top,h*(.32f+level*.0008f),rnd.nextInt(100)<Math.min(42,13+level/30)));
+      if(ticks%Math.max(12,46-level/25)==0)drops.add(new Drop(rnd.nextInt(3),top,rnd.nextInt(100)<Math.min(42,13+level/30)));
       Iterator<Drop> it=drops.iterator();while(it.hasNext()){Drop d=it.next();d.y+=h*(.32f+level*.0008f)*dt;float x=cx+(d.lane-1)*lw;if(d.rock){p.setColor(0xff778590);c.drawCircle(x,d.y,w*.033f,p);p.setColor(0xffc9d2d8);c.drawCircle(x-w*.009f,d.y-w*.01f,w*.009f,p);}else{p.setShadowLayer(16,0,0,gold);p.setShader(new RadialGradient(x-w*.01f,d.y-w*.01f,w*.04f,new int[]{0xfffff9b0,0xffffbd19,0xfff47700},null,Shader.TileMode.CLAMP));c.drawCircle(x,d.y,w*.034f,p);p.setShader(null);p.clearShadowLayer();}
         if(d.y>bottom){if(d.lane==lane){if(d.rock){lives--;sfx(ToneGenerator.TONE_PROP_NACK);}else{score+=10;coins++;if(score%50==0)sfx(ToneGenerator.TONE_PROP_ACK);}}it.remove();}}
       if(lives<=0){screen=6;sfx(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD);}else if(score>=100+level*5){if(level<999)level++;save();screen=6;sfx(ToneGenerator.TONE_PROP_PROMPT);}
